@@ -5,6 +5,7 @@ import axios from 'axios';
 function ViolationDetail() {
   const { id } = useParams();
   const [violation, setViolation] = useState(null);
+  const [imageSrc, setImageSrc] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -12,14 +13,31 @@ function ViolationDetail() {
       try {
         const response = await axios.get(`http://localhost:5000/api/violations/${id}`);
         setViolation(response.data);
+
+        if (response.data.violationImageId){
+          
+        }
       } catch (error) {
         console.error('Error fetching violation:', error);
       } finally {
         setLoading(false);
       }
     };
-    fetchViolation();
-  }, [id]);
+
+    const fetchImage = async (imageId) => {
+      try {
+        const imageResponse = await axios.get(
+          'http://localhost:5000/api/image/${imageId}',
+          { responseType: "blob"}
+        );
+        setImageSrc(URL.createObjectURL(imageResponse.data));
+      } catch (error) {
+        console.error("Error fetching image:", error)
+      }
+    };
+
+  fetchViolation();
+}, [id]);
 
   if (loading) {
     return (
@@ -89,15 +107,19 @@ function ViolationDetail() {
               </dl>
             </div>
           </div>
-          <div>
+<div>
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Violation Image
             </h2>
-            <img
-              src={violation.violationImage || '/placeholder.jpg'}
-              alt="Violation"
-              className="w-full h-auto rounded-lg shadow-sm"
-            />
+            {imageSrc ? (
+              <img
+                src={imageSrc}
+                alt="Violation"
+                className="w-full h-auto rounded-lg shadow-sm"
+              />
+            ) : (
+              <p className="text-gray-600">Image not available {imageSrc}</p>
+            )}
           </div>
         </div>
       </div>
