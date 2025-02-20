@@ -7,6 +7,7 @@ function ViolationDetail() {
   const [violation, setViolation] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchViolation = async () => {
@@ -14,11 +15,13 @@ function ViolationDetail() {
         const response = await axios.get(`http://localhost:5000/api/violations/${id}`);
         setViolation(response.data);
 
-        if (response.data.violationImageId){
-          
+        // Fetch image if violationImageId exists
+        if (response.data.violationImageId) {
+          await fetchImage(response.data.violationImageId);
         }
       } catch (error) {
         console.error('Error fetching violation:', error);
+        setError('Failed to load violation data');
       } finally {
         setLoading(false);
       }
@@ -27,17 +30,25 @@ function ViolationDetail() {
     const fetchImage = async (imageId) => {
       try {
         const imageResponse = await axios.get(
-          'http://localhost:5000/api/image/${imageId}',
+          `http://localhost:5000/api/violations/image/${imageId}`,
           { responseType: "blob"}
         );
+        
         setImageSrc(URL.createObjectURL(imageResponse.data));
       } catch (error) {
         console.error("Error fetching image:", error)
       }
     };
 
-  fetchViolation();
-}, [id]);
+    fetchViolation();
+
+    // Cleanup function to revoke object URL
+    return () => {
+      if (imageSrc) {
+        URL.revokeObjectURL(imageSrc);
+      }
+    };
+  }, [id]);
 
   if (loading) {
     return (
@@ -118,7 +129,9 @@ function ViolationDetail() {
                 className="w-full h-auto rounded-lg shadow-sm"
               />
             ) : (
-              <p className="text-gray-600">Image not available {imageSrc}</p>
+              <div className="flex justify-center items-center h-48 bg-gray-100 rounded-lg">
+                <p className="text-gray-600">No image available</p>
+              </div>
             )}
           </div>
         </div>
@@ -126,5 +139,6 @@ function ViolationDetail() {
     </div>
   );
 }
+
 
 export default ViolationDetail;

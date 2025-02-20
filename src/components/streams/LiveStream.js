@@ -21,6 +21,21 @@ const LiveStream = () => {
         wsRef.current.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
+            console.log("Received WebSocket message:", data);
+            wsRef.current.onmessage = (event) => {
+              try {
+                const data = JSON.parse(event.data);
+                if (data.type === 'frame') {
+                  if (data.camera === 'Camera 1' && frame1Ref.current) {
+                    frame1Ref.current.src = `data:image/jpeg;base64,${data.data}`;
+                  } else if (data.camera === 'Camera 2' && frame2Ref.current) {
+                    frame2Ref.current.src = `data:image/jpeg;base64,${data.data}`;
+                  }
+                }
+              } catch (e) {
+                console.error('Error processing message:', e);
+              }
+            };
             if (data.type === 'frame') {
               if (data.camera === 'Camera 1' && frame1Ref.current) {
                 frame1Ref.current.src = `data:image/jpeg;base64,${data.data}`;
