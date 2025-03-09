@@ -102,7 +102,7 @@ function ViolationDetail() {
                 <div className="flex justify-between">
                   <dt className="text-gray-600">Time:</dt>
                   <dd className="font-medium text-gray-900">
-                    {new Date(violation.timestamp).toLocaleString()}
+                    {new Date(violation.timestamp).toISOString().replace("T", " ").split(".")[0]}
                   </dd>
                 </div>
                 <div className="flex justify-between">

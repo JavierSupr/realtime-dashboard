@@ -63,7 +63,7 @@ function ViolationsList() {
                   {violation.licensePlate}
                 </h2>
                 <p className="text-gray-600">
-                  {new Date(violation.timestamp).toLocaleString()}
+                {new Date(violation.timestamp).toISOString().replace("T", " ").split(".")[0]}
                 </p>
                 <p className="text-gray-700">Camera: {violation.camera}</p>
               </div>
