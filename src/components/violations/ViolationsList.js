@@ -60,7 +60,7 @@ function ViolationsList() {
             <div className="flex justify-between items-center">
               <div className="space-y-2">
                 <h2 className="text-xl font-semibold text-gray-900">
-                  {violation.licensePlate}
+                  {violation.license_plate}
                 </h2>
                 <p className="text-gray-600">
                 {new Date(violation.timestamp).toISOString().replace("T", " ").split(".")[0]}
